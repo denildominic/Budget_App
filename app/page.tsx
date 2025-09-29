@@ -1,8 +1,10 @@
 "use client";
-import BudgetForm from "@/components/BudgetForm";
+
+import Card from "../components/Card";
+import BudgetForm from "../components/BudgetForm";
 import ExpenseForm from "../components/ExpenseForm";
 import ImportExport from "../components/ImportExport";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 function formatCurrency(cents: number, currency = "USD") {
   return new Intl.NumberFormat(undefined, {
@@ -10,6 +12,8 @@ function formatCurrency(cents: number, currency = "USD") {
     currency,
   }).format((cents || 0) / 100);
 }
+
+// Helpers for current month stats
 function getMonthKey(d = new Date()) {
   return d.toISOString().slice(0, 7); // "YYYY-MM"
 }
@@ -55,9 +59,13 @@ export default function Home() {
         : `exp-${Date.now()}`;
     setExpenses((prev) => [{ id, ...data }, ...prev]);
   };
-
   const addCategory = (c: Category) => setCategories((prev) => [c, ...prev]);
 
+  // delete a single expense by id (used in Recent)
+  const deleteExpense = (id: string) =>
+    setExpenses((prev) => prev.filter((e) => e.id !== id));
+
+  // Import/Export handlers
   const onExport = () => {
     const payload = { budgetCents, categories, expenses };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -70,7 +78,6 @@ export default function Home() {
     a.click();
     URL.revokeObjectURL(url);
   };
-
   const onImport = (data: unknown) => {
     const obj = data as any;
     if (!obj || typeof obj !== "object") return alert("Invalid JSON");
@@ -78,13 +85,13 @@ export default function Home() {
     if (Array.isArray(obj.categories)) setCategories(obj.categories);
     if (Array.isArray(obj.expenses)) setExpenses(obj.expenses);
   };
-
   const onClear = () => {
     if (!confirm("Clear all data?")) return;
     setBudgetCents(0);
-    setExpenses([]);
+    setExpenses([]); // keep categories for usability
   };
 
+  // Monthly stats
   const monthKey = getMonthKey();
   const monthExpenses = expenses.filter((e) => e.date.slice(0, 7) === monthKey);
   const monthTotal = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
@@ -93,8 +100,6 @@ export default function Home() {
     budgetCents > 0
       ? Math.min(100, Math.round((monthTotal / budgetCents) * 100))
       : 0;
-
-  // Simple projection for this month
   const today = new Date();
   const daysInMonth = getDaysInMonth(today);
   const dayOfMonth = today.getDate();
@@ -105,8 +110,8 @@ export default function Home() {
 
   return (
     <main className="space-y-6">
-      {/* ✅ NEW: Budget Overview with progress + KPIs */}
-      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+      {/* Budget Overview */}
+      <Card>
         <h2 className="text-2xl font-semibold">Budget Overview</h2>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {budgetCents > 0 ? (
@@ -130,19 +135,25 @@ export default function Home() {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
           <div className="rounded-xl border px-3 py-2">
             <div className="text-gray-500 dark:text-gray-400">Total</div>
-            <div className="font-medium">{formatCurrency(budgetCents)}</div>
+            <div className="font-medium tabular-nums">
+              {formatCurrency(budgetCents)}
+            </div>
           </div>
           <div className="rounded-xl border px-3 py-2">
             <div className="text-gray-500 dark:text-gray-400">Spent</div>
-            <div className="font-medium">{formatCurrency(monthTotal)}</div>
+            <div className="font-medium tabular-nums">
+              {formatCurrency(monthTotal)}
+            </div>
           </div>
           <div className="rounded-xl border px-3 py-2">
             <div className="text-gray-500 dark:text-gray-400">Left</div>
-            <div className="font-medium">{formatCurrency(remaining)}</div>
+            <div className="font-medium tabular-nums">
+              {formatCurrency(remaining)}
+            </div>
           </div>
           <div className="rounded-xl border px-3 py-2">
             <div className="text-gray-500 dark:text-gray-400">Projected</div>
-            <div className="font-medium">
+            <div className="font-medium tabular-nums">
               {formatCurrency(projected)}{" "}
               <span
                 className={
@@ -156,10 +167,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </Card>
 
       {/* Data Management */}
-      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+      <Card>
         <h2 className="text-xl font-semibold">Data Management</h2>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Backup or restore your data as JSON.
@@ -171,21 +182,24 @@ export default function Home() {
             onClear={onClear}
           />
         </div>
-      </section>
+      </Card>
 
       {/* Budget */}
-      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+      <Card>
         <h1 className="text-2xl font-semibold">Set Your Monthly Budget</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Current: <strong>{formatCurrency(budgetCents)}</strong>
+          Current:{" "}
+          <strong className="tabular-nums">
+            {formatCurrency(budgetCents)}
+          </strong>
         </p>
         <div className="mt-4">
           <BudgetForm budgetCents={budgetCents} onSetBudget={setBudgetCents} />
         </div>
-      </section>
+      </Card>
 
       {/* Add Expense */}
-      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+      <Card>
         <h2 className="text-xl font-semibold">Add Expense</h2>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Choose a category or pick <strong>Other</strong> to add a custom type.
@@ -197,19 +211,31 @@ export default function Home() {
             onAddCategory={addCategory}
           />
         </div>
-      </section>
+      </Card>
 
       {/* Recent */}
-      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+      <Card>
         <h3 className="text-lg font-semibold">Recent (3)</h3>
         <ul className="mt-3 space-y-2">
           {expenses.slice(0, 3).map((e) => (
             <li
               key={e.id}
-              className="flex items-center justify-between rounded-xl border px-3 py-2"
+              className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2"
             >
-              <span className="truncate">{e.description}</span>
-              <span className="font-medium">{formatCurrency(e.amount)}</span>
+              <div className="min-w-0 flex-1">
+                <span className="truncate">{e.description}</span>
+              </div>
+              <span className="font-medium tabular-nums">
+                {formatCurrency(e.amount)}
+              </span>
+              <button
+                onClick={() => deleteExpense(e.id)}
+                className="rounded-lg border px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
+                aria-label={`Delete ${e.description}`}
+                title="Delete"
+              >
+                Delete
+              </button>
             </li>
           ))}
           {expenses.length === 0 && (
@@ -218,7 +244,7 @@ export default function Home() {
             </li>
           )}
         </ul>
-      </section>
+      </Card>
     </main>
   );
 }
