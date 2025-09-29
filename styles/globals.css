@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* Align digits for cleaner currency columns */
+.tabular-nums { font-variant-numeric: tabular-nums; }

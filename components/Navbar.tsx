@@ -1,6 +1,31 @@
 "use client";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import { usePathname } from "next/navigation";
+
+function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const active = pathname === href;
+  const base = "rounded-xl px-3 py-2 text-sm";
+  return (
+    <Link
+      href={href}
+      className={
+        active
+          ? `${base} bg-gray-100 dark:bg-gray-900 font-medium`
+          : `${base} hover:bg-gray-100 dark:hover:bg-gray-900`
+      }
+    >
+      {children}
+    </Link>
+  );
+}
 
 export default function Navbar() {
   return (
@@ -11,31 +36,10 @@ export default function Navbar() {
             Budget App
           </Link>
           <nav className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/transactions"
-              className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-            >
-              Transactions
-            </Link>
-            <Link
-              href="/analytics"
-              className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-            >
-              Analytics
-            </Link>
-            <Link
-              href="/about"
-              className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-            >
-              About
-            </Link>
-
+            <NavLink href="/">Dashboard</NavLink>
+            <NavLink href="/transactions">Transactions</NavLink>
+            <NavLink href="/analytics">Analytics</NavLink>
+            <NavLink href="/about">About</NavLink>
             <ThemeToggle />
           </nav>
         </div>
