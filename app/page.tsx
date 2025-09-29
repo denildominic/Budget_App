@@ -10,6 +10,12 @@ function formatCurrency(cents: number, currency = "USD") {
     currency,
   }).format((cents || 0) / 100);
 }
+function getMonthKey(d = new Date()) {
+  return d.toISOString().slice(0, 7); // "YYYY-MM"
+}
+function getDaysInMonth(d = new Date()) {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+}
 
 type Expense = {
   id: string;
@@ -76,17 +82,103 @@ export default function Home() {
   const onClear = () => {
     if (!confirm("Clear all data?")) return;
     setBudgetCents(0);
-    setExpenses([]); // keep categories so the app still works
+    setExpenses([]);
   };
+
+  const monthKey = getMonthKey();
+  const monthExpenses = expenses.filter((e) => e.date.slice(0, 7) === monthKey);
+  const monthTotal = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const remaining = Math.max(budgetCents - monthTotal, 0);
+  const pct =
+    budgetCents > 0
+      ? Math.min(100, Math.round((monthTotal / budgetCents) * 100))
+      : 0;
+
+  // Simple projection for this month
+  const today = new Date();
+  const daysInMonth = getDaysInMonth(today);
+  const dayOfMonth = today.getDate();
+  const projected = Math.round(
+    (monthTotal / Math.max(1, dayOfMonth)) * daysInMonth
+  );
+  const onTrack = budgetCents > 0 ? projected <= budgetCents : false;
 
   return (
     <main className="space-y-6">
+      {/* ✅ NEW: Budget Overview with progress + KPIs */}
+      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+        <h2 className="text-2xl font-semibold">Budget Overview</h2>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {budgetCents > 0 ? (
+            <>
+              You&apos;ve used <strong>{pct}%</strong> of your monthly budget.
+            </>
+          ) : (
+            <>Set a monthly budget to get started.</>
+          )}
+        </p>
+
+        {/* Progress bar */}
+        <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-900">
+          <div
+            className="h-full rounded-full bg-[hsl(var(--primary,199_89%_48%))]"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+
+        {/* KPIs */}
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+          <div className="rounded-xl border px-3 py-2">
+            <div className="text-gray-500 dark:text-gray-400">Total</div>
+            <div className="font-medium">{formatCurrency(budgetCents)}</div>
+          </div>
+          <div className="rounded-xl border px-3 py-2">
+            <div className="text-gray-500 dark:text-gray-400">Spent</div>
+            <div className="font-medium">{formatCurrency(monthTotal)}</div>
+          </div>
+          <div className="rounded-xl border px-3 py-2">
+            <div className="text-gray-500 dark:text-gray-400">Left</div>
+            <div className="font-medium">{formatCurrency(remaining)}</div>
+          </div>
+          <div className="rounded-xl border px-3 py-2">
+            <div className="text-gray-500 dark:text-gray-400">Projected</div>
+            <div className="font-medium">
+              {formatCurrency(projected)}{" "}
+              <span
+                className={
+                  onTrack
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }
+              >
+                ({onTrack ? "on track" : "over pace"})
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Data Management */}
+      <section className="rounded-2xl border bg-white p-6 dark:bg-black">
+        <h2 className="text-xl font-semibold">Data Management</h2>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Backup or restore your data as JSON.
+        </p>
+        <div className="mt-4">
+          <ImportExport
+            onExport={onExport}
+            onImport={onImport}
+            onClear={onClear}
+          />
+        </div>
+      </section>
+
+      {/* Budget */}
       <section className="rounded-2xl border bg-white p-6 dark:bg-black">
         <h1 className="text-2xl font-semibold">Set Your Monthly Budget</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Current: <strong>{formatCurrency(budgetCents)}</strong>
         </p>
-
         <div className="mt-4">
           <BudgetForm budgetCents={budgetCents} onSetBudget={setBudgetCents} />
         </div>
@@ -107,7 +199,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Quick sanity list (last 3 expenses) */}
+      {/* Recent */}
       <section className="rounded-2xl border bg-white p-6 dark:bg-black">
         <h3 className="text-lg font-semibold">Recent (3)</h3>
         <ul className="mt-3 space-y-2">
