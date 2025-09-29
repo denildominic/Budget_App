@@ -12,6 +12,9 @@ export default function Navbar() {
             <Link href="/" className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900">
               Dashboard
             </Link>
+            <Link href="/transactions" className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900">
+              Transactions
+            </Link>
             <ThemeToggle />
           </nav>
         </div>
