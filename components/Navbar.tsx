@@ -29,6 +29,13 @@ export default function Navbar() {
             >
               Analytics
             </Link>
+            <Link
+              href="/about"
+              className="rounded-xl px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
+            >
+              About
+            </Link>
+
             <ThemeToggle />
           </nav>
         </div>
