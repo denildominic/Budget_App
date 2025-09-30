@@ -4,7 +4,16 @@ module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
+    "./hooks/**/*.{js,ts,jsx,tsx}"
   ],
-  theme: { extend: {} },
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#06b6d4'
+        }
+      }
+    }
+  },
   plugins: [],
 }

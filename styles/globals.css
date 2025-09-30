@@ -2,49 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* --- design tokens (light/dark) --- */
-:root {
-  --background: 210 40% 98%;
-  --foreground: 222.2 47.4% 11.2%;
+/* design tokens (light/dark) */
+:root{
+  --bg-1: 210 40% 98%;
+  --fg-1: 222.2 47.4% 11.2%;
   --card: 0 0% 100%;
   --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
   --primary: 199 89% 48%;
 }
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+.dark{
+  --bg-1: 222.2 84% 4.9%;
+  --fg-1: 210 40% 98%;
   --card: 217.2 32.6% 12.5%;
   --muted: 217.2 22% 16.5%;
-  --muted-foreground: 215 20.2% 65.1%;
   --primary: 199 89% 48%;
 }
 
-html, body {
-  height: 100%;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
+html,body { height:100%; background-color: hsl(var(--bg-1)); color: hsl(var(--fg-1)); }
 
-/* utilities */
+/* small helpers */
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
-/* nicer form controls */
+/* components layer */
 @layer components {
-  .btn {
-    @apply inline-flex items-center justify-center rounded-2xl px-4 py-2 font-medium
-           border shadow-sm transition hover:bg-gray-100 dark:hover:bg-gray-900;
-  }
-  .btn-primary {
-    @apply text-white border-transparent bg-sky-500 hover:bg-sky-600;
-  }
-  .input {
-    @apply h-14 w-full rounded-2xl border bg-white px-4 text-base dark:bg-black;
-  }
-  .select {
-    @apply h-14 w-full rounded-2xl border bg-white px-4 text-base dark:bg-black;
-  }
   .card {
-    @apply rounded-2xl border bg-white/90 p-6 shadow-[0_10px_30px_rgba(2,8,23,.08)] dark:bg-black/70 backdrop-blur;
+    @apply rounded-2xl border bg-white/90 p-6 shadow-[0_12px_40px_rgba(2,8,23,.08)] dark:bg-black/70 backdrop-blur;
   }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-2xl px-4 py-2 font-medium border transition;
+  }
+  .btn-primary { @apply bg-primary text-white border-transparent hover:bg-opacity-90; }
+  .input { @apply h-14 w-full rounded-2xl border bg-white px-4 text-base dark:bg-black; }
+  .select { @apply h-14 w-full rounded-2xl border bg-white px-4 text-base dark:bg-black; }
 }
