@@ -10,44 +10,31 @@ export default function ImportExport({
   onExport: () => void;
   onClear: () => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const readFile = async (file: File) => {
     const text = await file.text();
     try {
-      const json = JSON.parse(text);
-      onImport(json);
+      onImport(JSON.parse(text));
     } catch {
-      alert("Invalid JSON file");
+      alert("Invalid JSON");
     }
   };
-
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <button
-        onClick={onExport}
-        className="rounded-xl border px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-900"
-      >
+      <button onClick={onExport} className="btn">
         Export
       </button>
-      <button
-        onClick={() => inputRef.current?.click()}
-        className="rounded-xl border px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-900"
-      >
+      <button onClick={() => inputRef.current?.click()} className="btn">
         Import
       </button>
-      <button
-        onClick={onClear}
-        className="rounded-xl border px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
-      >
+      <button onClick={onClear} className="btn text-red-600 border-red-200">
         Clear
       </button>
-
       <input
         ref={inputRef}
         type="file"
-        className="hidden"
         accept="application/json"
+        className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) readFile(f);

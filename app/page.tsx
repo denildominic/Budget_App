@@ -1,24 +1,15 @@
 "use client";
-
 import Card from "../components/Card";
 import BudgetForm from "../components/BudgetForm";
 import ExpenseForm from "../components/ExpenseForm";
 import ImportExport from "../components/ImportExport";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
-function formatCurrency(cents: number, currency = "USD") {
+function formatCurrency(cents: number) {
   return new Intl.NumberFormat(undefined, {
     style: "currency",
-    currency,
+    currency: "USD",
   }).format((cents || 0) / 100);
-}
-
-// Helpers for current month stats
-function getMonthKey(d = new Date()) {
-  return d.toISOString().slice(0, 7); // "YYYY-MM"
-}
-function getDaysInMonth(d = new Date()) {
-  return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
 type Expense = {
@@ -39,7 +30,7 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: "general", name: "General", color: "#64748b" },
 ];
 
-export default function Home() {
+export default function Page() {
   const [budgetCents, setBudgetCents] = useLocalStorage<number>("bb:budget", 0);
   const [categories, setCategories] = useLocalStorage<Category[]>(
     "bb:categories",
@@ -47,7 +38,7 @@ export default function Home() {
   );
   const [expenses, setExpenses] = useLocalStorage<Expense[]>("bb:expenses", []);
 
-  const addExpense = (data: {
+  const addExpense = (d: {
     description: string;
     amount: number;
     categoryId: string;
@@ -57,15 +48,12 @@ export default function Home() {
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
         : `exp-${Date.now()}`;
-    setExpenses((prev) => [{ id, ...data }, ...prev]);
+    setExpenses((prev) => [{ id, ...d }, ...prev]);
   };
   const addCategory = (c: Category) => setCategories((prev) => [c, ...prev]);
-
-  // delete a single expense by id (used in Recent)
   const deleteExpense = (id: string) =>
-    setExpenses((prev) => prev.filter((e) => e.id !== id));
+    setExpenses((prev) => prev.filter((x) => x.id !== id));
 
-  // Import/Export handlers
   const onExport = () => {
     const payload = { budgetCents, categories, expenses };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -88,90 +76,95 @@ export default function Home() {
   const onClear = () => {
     if (!confirm("Clear all data?")) return;
     setBudgetCents(0);
-    setExpenses([]); // keep categories for usability
+    setExpenses([]);
   };
 
-  // Monthly stats
-  const monthKey = getMonthKey();
+  // monthly stats
+  const monthKey = new Date().toISOString().slice(0, 7);
   const monthExpenses = expenses.filter((e) => e.date.slice(0, 7) === monthKey);
-  const monthTotal = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const monthTotal = monthExpenses.reduce((s, e) => s + e.amount, 0);
   const remaining = Math.max(budgetCents - monthTotal, 0);
   const pct =
     budgetCents > 0
       ? Math.min(100, Math.round((monthTotal / budgetCents) * 100))
       : 0;
   const today = new Date();
-  const daysInMonth = getDaysInMonth(today);
-  const dayOfMonth = today.getDate();
+  const daysInMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    0
+  ).getDate();
   const projected = Math.round(
-    (monthTotal / Math.max(1, dayOfMonth)) * daysInMonth
+    (monthTotal / Math.max(1, today.getDate())) * daysInMonth
   );
   const onTrack = budgetCents > 0 ? projected <= budgetCents : false;
 
   return (
     <main className="space-y-6">
-      {/* Budget Overview */}
       <Card>
-        <h2 className="text-2xl font-semibold">Budget Overview</h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {budgetCents > 0 ? (
-            <>
-              You&apos;ve used <strong>{pct}%</strong> of your monthly budget.
-            </>
-          ) : (
-            <>Set a monthly budget to get started.</>
-          )}
-        </p>
-
-        {/* Progress bar */}
-        <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-900">
-          <div
-            className="h-full rounded-full bg-[hsl(var(--primary,199_89%_48%))]"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-
-        {/* KPIs */}
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
-          <div className="rounded-xl border px-3 py-2">
-            <div className="text-gray-500 dark:text-gray-400">Total</div>
-            <div className="font-medium tabular-nums">
-              {formatCurrency(budgetCents)}
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <h2 className="text-2xl font-semibold">Budget Overview</h2>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              {budgetCents > 0 ? (
+                <>
+                  You've used <strong>{pct}%</strong> of your monthly budget
+                </>
+              ) : (
+                "Set a monthly budget to get started."
+              )}
+            </p>
+            <div className="mt-4 w-full">
+              <div className="h-3 w-full rounded-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
+                <div
+                  className="h-full bg-primary"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="rounded-xl border px-3 py-2">
-            <div className="text-gray-500 dark:text-gray-400">Spent</div>
-            <div className="font-medium tabular-nums">
-              {formatCurrency(monthTotal)}
-            </div>
-          </div>
-          <div className="rounded-xl border px-3 py-2">
-            <div className="text-gray-500 dark:text-gray-400">Left</div>
-            <div className="font-medium tabular-nums">
-              {formatCurrency(remaining)}
-            </div>
-          </div>
-          <div className="rounded-xl border px-3 py-2">
-            <div className="text-gray-500 dark:text-gray-400">Projected</div>
-            <div className="font-medium tabular-nums">
-              {formatCurrency(projected)}{" "}
-              <span
-                className={
-                  onTrack
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }
-              >
-                ({onTrack ? "on track" : "over pace"})
-              </span>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Total
+                </div>
+                <div className="font-medium tabular-nums">
+                  {formatCurrency(budgetCents)}
+                </div>
+              </div>
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Spent
+                </div>
+                <div className="font-medium tabular-nums">
+                  {formatCurrency(monthTotal)}
+                </div>
+              </div>
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Left
+                </div>
+                <div className="font-medium tabular-nums">
+                  {formatCurrency(remaining)}
+                </div>
+              </div>
+              <div className="rounded-xl border px-3 py-2">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Projected
+                </div>
+                <div className="font-medium tabular-nums">
+                  {formatCurrency(projected)}{" "}
+                  <span className={onTrack ? "text-green-600" : "text-red-600"}>
+                    ({onTrack ? "on track" : "over pace"})
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Data Management */}
       <Card>
-        <h2 className="text-xl font-semibold">Data Management</h2>
+        <h3 className="text-lg font-semibold">Data Management</h3>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Backup or restore your data as JSON.
         </p>
@@ -184,56 +177,53 @@ export default function Home() {
         </div>
       </Card>
 
-      {/* Budget */}
-      <Card>
-        <h1 className="text-2xl font-semibold">Set Your Monthly Budget</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Current:{" "}
-          <strong className="tabular-nums">
-            {formatCurrency(budgetCents)}
-          </strong>
-        </p>
-        <div className="mt-4">
-          <BudgetForm budgetCents={budgetCents} onSetBudget={setBudgetCents} />
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
+          <h3 className="text-lg font-semibold">Set Your Monthly Budget</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Current:{" "}
+            <strong className="tabular-nums">
+              {formatCurrency(budgetCents)}
+            </strong>
+          </p>
+          <div className="mt-4">
+            <BudgetForm
+              budgetCents={budgetCents}
+              onSetBudget={setBudgetCents}
+            />
+          </div>
+        </Card>
 
-      {/* Add Expense */}
-      <Card>
-        <h2 className="text-xl font-semibold">Add Expense</h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Choose a category or pick <strong>Other</strong> to add a custom type.
-        </p>
-        <div className="mt-4">
-          <ExpenseForm
-            categories={categories}
-            onAdd={addExpense}
-            onAddCategory={addCategory}
-          />
-        </div>
-      </Card>
+        <Card>
+          <h3 className="text-lg font-semibold">Add Expense</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Pick <strong>Other</strong> to add a custom category.
+          </p>
+          <div className="mt-4">
+            <ExpenseForm
+              categories={categories}
+              onAdd={addExpense}
+              onAddCategory={addCategory}
+            />
+          </div>
+        </Card>
+      </div>
 
-      {/* Recent */}
       <Card>
         <h3 className="text-lg font-semibold">Recent (3)</h3>
         <ul className="mt-3 space-y-2">
           {expenses.slice(0, 3).map((e) => (
             <li
               key={e.id}
-              className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2"
+              className="flex items-center gap-3 rounded-xl border px-3 py-2"
             >
               <div className="min-w-0 flex-1">
                 <span className="truncate">{e.description}</span>
               </div>
-              <span className="font-medium tabular-nums">
+              <div className="tabular-nums font-medium">
                 {formatCurrency(e.amount)}
-              </span>
-              <button
-                onClick={() => deleteExpense(e.id)}
-                className="rounded-lg border px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                aria-label={`Delete ${e.description}`}
-                title="Delete"
-              >
+              </div>
+              <button onClick={() => deleteExpense(e.id)} className="btn">
                 Delete
               </button>
             </li>
