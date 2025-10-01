@@ -38,7 +38,7 @@ export default function Navbar() {
             <div>
               <div className="font-semibold">ByteBudget</div>
               <div className="text-xs text-muted-foreground hidden sm:block">
-                Track. Optimize. Grow.
+                Track and Optimize Your Spending.
               </div>
             </div>
           </div>
