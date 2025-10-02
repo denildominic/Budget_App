@@ -9,6 +9,7 @@ export default function AboutPage() {
           This budget app helps you set a monthly budget, add expenses
           (including custom categories), view transactions with filters, analyze
           spend by category and daily trend, and import/export data as JSON.
+          More features coming soon!
         </p>
         <ul className="mt-4 list-disc space-y-1 pl-6 text-sm">
           <li>Dark/Light mode toggle with no flicker</li>
