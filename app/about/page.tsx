@@ -16,7 +16,7 @@ export default function AboutPage() {
           <li>“Other → Custom Type” for categories</li>
           <li>LocalStorage persistence (no backend required)</li>
           <li>Analytics: doughnut by category & line trend</li>
-          <li>Import/Export your data</li>
+          <li>Import/Export your data as JSON</li>
         </ul>
       </section>
     </main>
