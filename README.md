@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ByteBudget — Modern Personal Finance Dashboard
+ByteBudget is a fast, minimalist budget app built with Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui. It focuses on clarity, keyboard-friendly
+input, and real-time insights so you can track spending without friction.
 
-## Getting Started
+✨ Features
+Beautiful Light/Dark UI with system preference + manual toggle
+Accounts & Categories (income/expense) with editable budgets
+Smart Transactions (quick add, CSV import, inline edit)
+Analytics: monthly burn rate, category trends, cashflow, savings rate
+Goals: envelopes/targets with progress bars
+Search & Filters: by account, category, date range, amount, text
+Offline-friendly UI; optimistic updates for snappy interactions
+Accessible: semantic components, focus states, keyboard shortcuts
+UI built with shadcn/ui components and Tailwind design tokens for a clean, Apple-like aesthetic.
 
-First, run the development server:
+🧰 Tech Stack
+Next.js 15 (App Router + Turbopack)
+TypeScript
+Tailwind CSS + shadcn/ui
+Zustand or Redux Toolkit (state)
+Zod (schema validation)
+Prisma + SQLite/PostgreSQL (data)
+Next Themes (dark mode)
+React Hook Form (forms)
 
-```bash
+🚀 Quick Start
+
+# 1) Clone
+
+git clone https://github.com/<you>/ByteBudget.git
+cd ByteBudget
+
+# 2) Install deps
+
+npm install
+
+# or: pnpm i / yarn
+
+# 3) Environment
+
+cp .env.example .env.local
+
+# fill DB connection, e.g. for SQLite:
+
+# DATABASE_URL="file:./dev.db"
+
+# 4) Prisma
+
+npx prisma migrate dev
+npx prisma db seed # optional if you have a seed
+
+# 5) Dev
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build & start
+npm run build
+npm run start
+⚙️ Configuration
+Create .env.local:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Database
 
-## Learn More
+DATABASE_URL="file:./dev.db" # SQLite
 
-To learn more about Next.js, take a look at the following resources:
+# or for Postgres:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# DATABASE_URL="postgresql://user:pass@host:5432/bytebudget"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Optional analytics/auth/etc. add here later
