@@ -1,9 +1,11 @@
 "use client";
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTheme } from "./ThemeProvider";
 
 const KEY = "bb-theme";
 export default function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState(false);
   useEffect(
     () => setDark(document.documentElement.classList.contains("dark")),
@@ -22,15 +24,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setDark((d) => !d)}
-      className="btn"
+      className="px-3 py-1.5 rounded-xl border-token bg-card text-sm"
       aria-label="Toggle theme"
     >
-      {dark ? (
-        <Sun className="h-4 w-4 mr-2" />
-      ) : (
-        <Moon className="h-4 w-4 mr-2" />
-      )}
-      <span className="hidden sm:inline">{dark ? "Light" : "Dark"}</span>
+      {theme === "light" ? "🌙 Dark" : "☀️ Light"}
     </button>
   );
 }
