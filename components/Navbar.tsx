@@ -28,29 +28,31 @@ function NavLink({
 
 export default function Navbar() {
   return (
-    <header className="sticky top-4 z-40">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="flex items-center justify-between gap-4 bg-white/60 dark:bg-black/60 backdrop-blur rounded-2xl border p-3 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center text-white font-bold shadow">
-              B
-            </div>
-            <div>
-              <div className="font-semibold">ByteBudget 2025</div>
-              <div className="text-xs text-muted-foreground hidden sm:block">
-                Track and Optimize Your Spending.
-              </div>
+    <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-[hsl(var(--bg)/0.72)] bg-[hsl(var(--bg))] border-b border-token">
+      <div className="mx-auto max-w-container px-4 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center text-white font-bold shadow">
+            B
+          </div>
+          <div>
+            <div className="font-semibold">ByteBudget</div>
+            <div className="text-xs text-muted-foreground hidden sm:block">
+              Track and Optimize Your Spending.
             </div>
           </div>
-
-          <nav className="flex items-center gap-2">
-            <NavLink href="/">Dashboard</NavLink>
-            <NavLink href="/transactions">Transactions</NavLink>
-            <NavLink href="/analytics">Analytics</NavLink>
-            <NavLink href="/about">About</NavLink>
-            <ThemeToggle />
-          </nav>
         </div>
+
+        <nav className="flex items-center gap-2">
+          <NavLink href="/">Dashboard</NavLink>
+          <NavLink href="/transactions">Transactions</NavLink>
+          <NavLink href="/analytics">Analytics</NavLink>
+          <NavLink href="/about">About</NavLink>
+        </nav>
+        <input
+          className="hidden md:block w-72 rounded-xl bg-card border-token px-3 py-2 text-sm"
+          placeholder="Search transactions…"
+        />
+        <ThemeToggle />
       </div>
     </header>
   );
