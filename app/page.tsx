@@ -1,19 +1,16 @@
 "use client";
-import Card from "../components/Card";
-import { Stat } from "@/components/Stat";
+
+import Card from "@/components/Card";
 import { BudgetProgress } from "@/components/BudgetProgress";
-import BudgetForm from "../components/BudgetForm";
-import ExpenseForm from "../components/ExpenseForm";
-import ImportExport from "../components/ImportExport";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import BudgetForm from "@/components/BudgetForm";
+import ExpenseForm from "@/components/ExpenseForm";
+import ImportExport from "@/components/ImportExport";
+import { Stat } from "@/components/Stat";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useMemo } from "react";
 
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-  }).format((cents || 0) / 100);
-}
+const fmt = (cents: number) =>
+  (cents < 0 ? "-" : "") + `$${(Math.abs(cents) / 100).toFixed(2)}`;
 
 type Expense = {
   id: string;
@@ -23,9 +20,6 @@ type Expense = {
   date: string;
 };
 type Category = { id: string; name: string; color: string };
-
-const fmt = (cents: number): string =>
-  (cents < 0 ? "-" : "") + `$${(Math.abs(cents) / 100).toFixed(2)}`;
 
 const DEFAULT_CATEGORIES: Category[] = [
   { id: "food", name: "Food", color: "#06b6d4" },
@@ -44,12 +38,7 @@ export default function Page() {
   );
   const [expenses, setExpenses] = useLocalStorage<Expense[]>("bb:expenses", []);
 
-  const addExpense = (d: {
-    description: string;
-    amount: number;
-    categoryId: string;
-    date: string;
-  }) => {
+  const addExpense = (d: Omit<Expense, "id">) => {
     const id =
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
@@ -60,59 +49,14 @@ export default function Page() {
   const deleteExpense = (id: string) =>
     setExpenses((prev) => prev.filter((x) => x.id !== id));
 
-  const spentCents = useMemo<number>(
+  const spentCents = useMemo(
     () => expenses.reduce((s, e) => s + e.amount, 0),
     [expenses]
   );
-
   const leftCents = Math.max(0, budgetCents - spentCents);
+  const progressPct = budgetCents ? (spentCents / budgetCents) * 100 : 0;
 
-  const onExport = () => {
-    const payload = { budgetCents, categories, expenses };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "budget-data.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-  const onImport = (data: unknown) => {
-    const obj = data as any;
-    if (!obj || typeof obj !== "object") return alert("Invalid JSON");
-    if (typeof obj.budgetCents === "number") setBudgetCents(obj.budgetCents);
-    if (Array.isArray(obj.categories)) setCategories(obj.categories);
-    if (Array.isArray(obj.expenses)) setExpenses(obj.expenses);
-  };
-  const onClear = () => {
-    if (!confirm("Clear all data?")) return;
-    setBudgetCents(0);
-    setExpenses([]);
-  };
-
-  // monthly stats
-  const monthKey = new Date().toISOString().slice(0, 7);
-  const monthExpenses = expenses.filter((e) => e.date.slice(0, 7) === monthKey);
-  const monthTotal = monthExpenses.reduce((s, e) => s + e.amount, 0);
-  const remaining = Math.max(budgetCents - monthTotal, 0);
-  const pct =
-    budgetCents > 0
-      ? Math.min(100, Math.round((monthTotal / budgetCents) * 100))
-      : 0;
-  const today = new Date();
-  const daysInMonth = new Date(
-    today.getFullYear(),
-    today.getMonth() + 1,
-    0
-  ).getDate();
-  const projected = Math.round(
-    (monthTotal / Math.max(1, today.getDate())) * daysInMonth
-  );
-  const onTrack = budgetCents > 0 ? projected <= budgetCents : false;
-
-  const projectedText = useMemo<string>(() => {
+  const projectedText = useMemo(() => {
     if (budgetCents <= 0) return "$0.00";
     const now = new Date();
     const daysInMonth = new Date(
@@ -127,10 +71,8 @@ export default function Page() {
     return over > 0 ? `${label} (over pace)` : `${label} (under pace)`;
   }, [budgetCents, spentCents]);
 
-  const progressPct = budgetCents ? (spentCents / budgetCents) * 100 : 0;
-
   return (
-    <main className="mx-auto max-w-container px-4 py-6 md:py-8 space-y-6 md:space-y-8">
+    <main className="mx-auto max-w-6xl px-4 py-6 md:py-8 space-y-6 md:space-y-8">
       <Card
         title="Budget Overview"
         subtitle="Set a monthly budget to get started."
@@ -163,9 +105,31 @@ export default function Page() {
         </p>
         <div className="mt-4">
           <ImportExport
-            onExport={onExport}
-            onImport={onImport}
-            onClear={onClear}
+            onExport={() => {
+              const payload = { budgetCents, categories, expenses };
+              const blob = new Blob([JSON.stringify(payload, null, 2)], {
+                type: "application/json",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "budget-data.json";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            onImport={(data) => {
+              const obj = data as any;
+              if (!obj || typeof obj !== "object") return alert("Invalid JSON");
+              if (typeof obj.budgetCents === "number")
+                setBudgetCents(obj.budgetCents);
+              if (Array.isArray(obj.categories)) setCategories(obj.categories);
+              if (Array.isArray(obj.expenses)) setExpenses(obj.expenses);
+            }}
+            onClear={() => {
+              if (!confirm("Clear all data?")) return;
+              setBudgetCents(0);
+              setExpenses([]);
+            }}
           />
         </div>
       </Card>
@@ -175,9 +139,7 @@ export default function Page() {
           <h3 className="text-lg font-semibold">Set Your Monthly Budget</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Current:{" "}
-            <strong className="tabular-nums">
-              {formatCurrency(budgetCents)}
-            </strong>
+            <strong className="tabular-nums">{fmt(budgetCents)}</strong>
           </p>
           <div className="mt-4">
             <BudgetForm
@@ -195,7 +157,7 @@ export default function Page() {
           <div className="mt-4">
             <ExpenseForm
               categories={categories}
-              onAdd={addExpense}
+              onAdd={(d) => addExpense(d)}
               onAddCategory={addCategory}
             />
           </div>
@@ -213,9 +175,7 @@ export default function Page() {
               <div className="min-w-0 flex-1">
                 <span className="truncate">{e.description}</span>
               </div>
-              <div className="tabular-nums font-medium">
-                {formatCurrency(e.amount)}
-              </div>
+              <div className="tabular-nums font-medium">{fmt(e.amount)}</div>
               <button onClick={() => deleteExpense(e.id)} className="btn">
                 Delete
               </button>

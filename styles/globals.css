@@ -2,36 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* design tokens (light/dark) */
-:root{
+/* ---- Design tokens (light/dark) ---- */
+:root {
   --bg-1: 210 40% 98%;
   --fg-1: 222.2 47.4% 11.2%;
   --card: 0 0% 100%;
   --muted: 210 40% 96.1%;
   --primary: 199 89% 48%;
+
+  /* Map to common semantic vars used by components */
+  --background: var(--bg-1);
+  --foreground: var(--fg-1);
+  --card-foreground: var(--fg-1);
+  --muted-foreground: 215 20.2% 35%;
 }
-.dark{
+.dark {
   --bg-1: 222.2 84% 4.9%;
   --fg-1: 210 40% 98%;
   --card: 217.2 32.6% 12.5%;
   --muted: 217.2 22% 16.5%;
   --primary: 199 89% 48%;
+
+  --background: var(--bg-1);
+  --foreground: var(--fg-1);
+  --card-foreground: var(--fg-1);
+  --muted-foreground: 217.2 10% 75%;
 }
 
-html,body { height:100%; background-color: hsl(var(--bg-1)); color: hsl(var(--fg-1)); }
+html,
+body {
+  height: 100%;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
 
-/* small helpers */
-.tabular-nums { font-variant-numeric: tabular-nums; }
+/* helpers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
 
-/* components layer */
+/* theme-aware components */
 @layer components {
   .card {
-    @apply rounded-2xl border bg-white/90 p-6 shadow-[0_12px_40px_rgba(2,8,23,.08)] dark:bg-black/70 backdrop-blur;
+    @apply rounded-2xl border shadow-[0_12px_40px_rgba(2,8,23,.08)] p-6 md:p-8;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
   }
   .btn {
     @apply inline-flex items-center justify-center rounded-2xl px-4 py-2 font-medium border transition;
   }
-  .btn-primary { @apply bg-primary text-white border-transparent hover:bg-opacity-90; }
-  .input { @apply h-14 w-full rounded-2xl border bg-white px-4 text-base dark:bg-black; }
-  .select { @apply h-14 w-full rounded-2xl border bg-white px-4 text-base dark:bg-black; }
+  .input,
+  .select {
+    @apply h-12 w-full rounded-2xl border px-4 text-base;
+    background-color: transparent;
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Safari: ensure form text shows on dark bg */
+input,
+select,
+textarea,
+button {
+  -webkit-text-fill-color: currentColor;
+}
+::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
 }

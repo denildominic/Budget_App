@@ -1,33 +1,31 @@
 "use client";
+
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useTheme } from "./ThemeProvider";
+import { useTheme } from "next-themes"; // <-- change this line
 
 const KEY = "bb-theme";
+
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [dark, setDark] = useState(false);
-  useEffect(
-    () => setDark(document.documentElement.classList.contains("dark")),
-    []
-  );
-  useEffect(() => {
-    const el = document.documentElement;
-    if (dark) {
-      el.classList.add("dark");
-      localStorage.setItem(KEY, "dark");
-    } else {
-      el.classList.remove("dark");
-      localStorage.setItem(KEY, "light");
-    }
-  }, [dark]);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const current = theme === "system" ? resolvedTheme : theme;
+
+  // hydrate SSR mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  const isDark = current === "dark";
+
   return (
     <button
-      onClick={() => setDark((d) => !d)}
-      className="px-3 py-1.5 rounded-xl border-token bg-card text-sm"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm"
       aria-label="Toggle theme"
+      title="Toggle theme"
     >
-      {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+      {isDark ? <Sun size={16} /> : <Moon size={16} />}
+      {isDark ? "Light" : "Dark"}
     </button>
   );
 }

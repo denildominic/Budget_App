@@ -5,7 +5,9 @@ type Size = "sm" | "md" | "lg" | "xl";
 export default function Card({
   className = "",
   children,
-  size = "lg", // bigger by default
+  title,
+  subtitle,
+  size = "lg",
 }: React.PropsWithChildren<{
   className?: string;
   title?: string;
@@ -19,12 +21,12 @@ export default function Card({
       ? "p-6"
       : size === "lg"
       ? "p-8"
-      : "p-10 md:p-12"; // xl
+      : "p-10 md:p-12";
 
   return (
     <section
       className={[
-        "bg-[hsl(var(--card))]",
+        "card",
         "border border-black/10 dark:border-white/10",
         "rounded-2xl shadow-xl",
         "space-y-6",
@@ -32,6 +34,12 @@ export default function Card({
         className,
       ].join(" ")}
     >
+      {(title || subtitle) && (
+        <header>
+          {title && <h2 className="text-xl font-semibold">{title}</h2>}
+          {subtitle && <p className="mt-1 text-sm opacity-70">{subtitle}</p>}
+        </header>
+      )}
       {children}
     </section>
   );

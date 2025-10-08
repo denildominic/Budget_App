@@ -1,7 +1,7 @@
 // app/layout.tsx
 import "../styles/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Navbar from "@/components/Navbar"; // ✅ add this
+import Navbar from "@/components/Navbar";
 
 export const metadata = { title: "ByteBudget" };
 
@@ -13,11 +13,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider>
-          {/* NAVBAR */}
+        {/* Theme toggling works by adding/removing the "dark" class on <html> */}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Navbar />
-
-          {/* Page content */}
           <div className="min-h-screen">{children}</div>
         </ThemeProvider>
       </body>

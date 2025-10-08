@@ -1,29 +1,14 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark";
-const ThemeCtx = createContext<{ theme: Theme; setTheme: (t: Theme) => void }>({
-  theme: "light",
-  setTheme: () => {},
-});
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
-    return (localStorage.getItem("bb-theme") as Theme) || "light";
-  });
-
-  useEffect(() => {
-    const html = document.documentElement;
-    html.setAttribute("data-theme", theme);
-    localStorage.setItem("bb-theme", theme);
-  }, [theme]);
-
-  return (
-    <ThemeCtx.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeCtx.Provider>
-  );
+/**
+ * Thin wrapper around next-themes that forwards all props so you can use:
+ * <ThemeProvider attribute="class" defaultTheme="system" enableSystem>…
+ */
+export function ThemeProvider(
+  props: React.ComponentProps<typeof NextThemesProvider>
+) {
+  return <NextThemesProvider {...props} />;
 }
-
-export const useTheme = () => useContext(ThemeCtx);
