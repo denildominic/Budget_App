@@ -28,7 +28,8 @@ React Hook Form (forms)
 # 1) Clone
 
 https://github.com/denildominic/Budget_App.git
-cd ByteBudget
+
+cd Budget_App
 
 # 2) Install deps
 
