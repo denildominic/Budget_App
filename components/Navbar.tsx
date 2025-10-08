@@ -48,10 +48,7 @@ export default function Navbar() {
           <NavLink href="/analytics">Analytics</NavLink>
           <NavLink href="/about">About</NavLink>
         </nav>
-        <input
-          className="hidden md:block w-72 rounded-xl bg-card border-token px-3 py-2 text-sm"
-          placeholder="Search transactions…"
-        />
+
         <ThemeToggle />
       </div>
     </header>

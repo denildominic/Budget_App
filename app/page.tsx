@@ -72,7 +72,7 @@ export default function Page() {
   }, [budgetCents, spentCents]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-6 md:py-8 space-y-6 md:space-y-8">
+    <main className="mx-auto max-w-container px-4 py-6 md:py-8 space-y-6 md:space-y-8">
       <Card
         title="Budget Overview"
         subtitle="Set a monthly budget to get started."
