@@ -1,10 +1,10 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+//import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes"; // <-- change this line
 
-const KEY = "bb-theme";
+//const KEY = "bb-theme";
 
 export default function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
