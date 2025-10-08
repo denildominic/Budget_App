@@ -16,6 +16,9 @@ export default function AboutPage() {
           <li>LocalStorage persistence (no backend required)</li>
           <li>Analytics: doughnut by category & line trend</li>
           <li>Import/Export your data as JSON</li>
+          <li>Responsive design for mobile & desktop</li>
+          <li>Built with Next.js, TypeScript, Tailwind CSS</li>
+          <li> Copyright © 2025 Denil Dominic</li>
         </ul>
       </section>
     </main>
