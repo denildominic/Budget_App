@@ -1,9 +1,12 @@
 "use client";
 import Card from "../components/Card";
+import { Stat } from "@/components/Stat";
+import { BudgetProgress } from "@/components/BudgetProgress";
 import BudgetForm from "../components/BudgetForm";
 import ExpenseForm from "../components/ExpenseForm";
 import ImportExport from "../components/ImportExport";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useMemo } from "react";
 
 function formatCurrency(cents: number) {
   return new Intl.NumberFormat(undefined, {
@@ -20,6 +23,9 @@ type Expense = {
   date: string;
 };
 type Category = { id: string; name: string; color: string };
+
+const fmt = (cents: number): string =>
+  (cents < 0 ? "-" : "") + `$${(Math.abs(cents) / 100).toFixed(2)}`;
 
 const DEFAULT_CATEGORIES: Category[] = [
   { id: "food", name: "Food", color: "#06b6d4" },
@@ -53,6 +59,13 @@ export default function Page() {
   const addCategory = (c: Category) => setCategories((prev) => [c, ...prev]);
   const deleteExpense = (id: string) =>
     setExpenses((prev) => prev.filter((x) => x.id !== id));
+
+  const spentCents = useMemo<number>(
+    () => expenses.reduce((s, e) => s + e.amount, 0),
+    [expenses]
+  );
+
+  const leftCents = Math.max(0, budgetCents - spentCents);
 
   const onExport = () => {
     const payload = { budgetCents, categories, expenses };
@@ -99,66 +112,46 @@ export default function Page() {
   );
   const onTrack = budgetCents > 0 ? projected <= budgetCents : false;
 
+  const projectedText = useMemo<string>(() => {
+    if (budgetCents <= 0) return "$0.00";
+    const now = new Date();
+    const daysInMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0
+    ).getDate();
+    const day = now.getDate();
+    const allowedSoFar = Math.round((budgetCents * day) / daysInMonth);
+    const over = spentCents - allowedSoFar;
+    const label = fmt(Math.abs(over));
+    return over > 0 ? `${label} (over pace)` : `${label} (under pace)`;
+  }, [budgetCents, spentCents]);
+
+  const progressPct = budgetCents ? (spentCents / budgetCents) * 100 : 0;
+
   return (
-    <main className="space-y-6">
-      <Card>
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <h2 className="text-2xl font-semibold">Budget Overview</h2>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {budgetCents > 0 ? (
-                <>
-                  You've used <strong>{pct}%</strong> of your monthly budget
-                </>
-              ) : (
-                "Set a monthly budget to get started."
-              )}
-            </p>
-            <div className="mt-4 w-full">
-              <div className="h-3 w-full rounded-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
-                <div
-                  className="h-full bg-primary"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Total
-                </div>
-                <div className="font-medium tabular-nums">
-                  {formatCurrency(budgetCents)}
-                </div>
-              </div>
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Spent
-                </div>
-                <div className="font-medium tabular-nums">
-                  {formatCurrency(monthTotal)}
-                </div>
-              </div>
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Left
-                </div>
-                <div className="font-medium tabular-nums">
-                  {formatCurrency(remaining)}
-                </div>
-              </div>
-              <div className="rounded-xl border px-3 py-2">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Projected
-                </div>
-                <div className="font-medium tabular-nums">
-                  {formatCurrency(projected)}{" "}
-                  <span className={onTrack ? "text-green-600" : "text-red-600"}>
-                    ({onTrack ? "on track" : "over pace"})
-                  </span>
-                </div>
-              </div>
-            </div>
+    <main className="mx-auto max-w-container px-4 py-6 md:py-8 space-y-6 md:space-y-8">
+      <Card
+        title="Budget Overview"
+        subtitle="Set a monthly budget to get started."
+      >
+        <div className="space-y-4">
+          <BudgetProgress pct={progressPct} />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <Stat label="Total" value={fmt(budgetCents)} />
+            <Stat label="Spent" value={fmt(spentCents)} />
+            <Stat label="Left" value={fmt(leftCents)} />
+            <Stat
+              label="Projected"
+              value={projectedText}
+              note={
+                projectedText.includes("over") ? (
+                  <span className="text-red-500">over pace</span>
+                ) : (
+                  <span className="text-emerald-500">under pace</span>
+                )
+              }
+            />
           </div>
         </div>
       </Card>

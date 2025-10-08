@@ -6,7 +6,12 @@ export default function Card({
   className = "",
   children,
   size = "lg", // bigger by default
-}: React.PropsWithChildren<{ className?: string; size?: Size }>) {
+}: React.PropsWithChildren<{
+  className?: string;
+  title?: string;
+  subtitle?: string;
+  size?: Size;
+}>) {
   const pad =
     size === "sm"
       ? "p-4"
