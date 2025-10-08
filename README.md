@@ -27,7 +27,7 @@ React Hook Form (forms)
 
 # 1) Clone
 
-git clone https://github.com/<you>/ByteBudget.git
+https://github.com/denildominic/Budget_App.git
 cd ByteBudget
 
 # 2) Install deps
