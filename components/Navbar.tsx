@@ -28,7 +28,16 @@ function NavLink({
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-[hsl(var(--bg)/0.72)] bg-[hsl(var(--bg))] border-b border-token">
+    <header
+      className="
+        sticky top-0 z-40
+        backdrop-blur
+        supports-[backdrop-filter]:bg-[hsl(var(--bg)/0.72)]
+        bg-[hsl(var(--bg))]
+        border-b-0 shadow-none
+        transform-gpu [backface-visibility:hidden]
+      "
+    >
       <div className="mx-auto max-w-container px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="h-11 w-11 rounded-xl bg-lime-500 flex items-center justify-center text-white font-bold shadow">
@@ -36,9 +45,6 @@ export default function Navbar() {
           </div>
           <div>
             <div className="font-semibold">ByteBudget</div>
-            <div className="text-xs text-muted-foreground hidden sm:block opacity-60">
-              Track and Optimize Your Spending.
-            </div>
           </div>
         </div>
 
