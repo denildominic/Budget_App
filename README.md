@@ -27,14 +27,15 @@ React Hook Form (forms)
 
 # 1) Clone
 
-git clone https://github.com/<you>/ByteBudget.git
-cd ByteBudget
+https://github.com/denildominic/Budget_App.git
+
+cd Budget_App
 
 # 2) Install deps
 
 npm install
 
-# or: pnpm i / yarn
+### or: pnpm i / yarn
 
 # 3) Environment
 
@@ -53,20 +54,11 @@ npx prisma db seed # optional if you have a seed
 
 npm run dev
 
-# open http://localhost:3000
+open http://localhost:3000
 
 Build & start
 npm run build
 npm run start
-⚙️ Configuration
-Create .env.local:
 
-# Database
 
-DATABASE_URL="file:./dev.db" # SQLite
 
-# or for Postgres:
-
-# DATABASE_URL="postgresql://user:pass@host:5432/bytebudget"
-
-# Optional analytics/auth/etc. add here later
