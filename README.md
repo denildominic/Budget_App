@@ -41,12 +41,6 @@ npm install
 
 cp .env.example .env.local
 
-# fill DB connection, e.g. for SQLite:
-
-# DATABASE_URL="file:./dev.db"
-
-
-
 # 4) Dev
 
 npm run dev
