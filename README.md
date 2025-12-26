@@ -45,12 +45,9 @@ cp .env.example .env.local
 
 # DATABASE_URL="file:./dev.db"
 
-# 4) Prisma
 
-npx prisma migrate dev
-npx prisma db seed # optional if you have a seed
 
-# 5) Dev
+# 4) Dev
 
 npm run dev
 
