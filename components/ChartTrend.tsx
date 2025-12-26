@@ -31,7 +31,7 @@ export default function ChartTrend({
     <div className="rounded-2xl border bg-white p-4 dark:bg-black">
       <div className="mb-2 font-semibold">Daily Spending Trend!</div>
       {data.length === 0 ? (
-        <div className="text-sm text-gray-500 dark:text-gray-400">No data yet</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">No data yet!</div>
       ) : (
         <Line data={chartData} />
       )}
