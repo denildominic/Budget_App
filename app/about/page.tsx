@@ -73,7 +73,7 @@ export default function AboutPage() {
               About ByteBudget
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-400">
-              ByteBudget is a simple, local-first budget tracker that helps you set a monthly
+              ByteBudget is a simple, budget tracker that helps you set a monthly
               budget, log expenses, and understand spending patterns with quick analytics.
             </p>
           </div>
