@@ -77,7 +77,7 @@ export default function TransactionsPage() {
                   colSpan={5}
                   className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                 >
-                  No transactions
+                  No transactions!
                 </td>
               </tr>
             )}
