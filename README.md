@@ -40,7 +40,7 @@ npm install
 
 ## 3) Environment
 
-cp .env.example .env.local
+#### cp .env.example .env.local
 
 ## 4) Dev
 
