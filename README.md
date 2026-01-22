@@ -35,7 +35,8 @@ cd Budget_App
 
 npm install
 
-### or: pnpm i / yarn
+#### or
+#### pnpm i / yarn
 
 ## 3) Environment
 
@@ -49,8 +50,8 @@ open http://localhost:3000
 
 Build & start
 
-npm run build
-npm run start
+#### npm run build
+#### npm run start
 
 
 
