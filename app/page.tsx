@@ -136,9 +136,9 @@ export default function Page() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
-          <h3 className="text-lg font-semibold">Set Your Monthly Budget</h3>
+          <h3 className="text-lg font-semibold">Set Monthly Budget</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Current:{" "}
+            Current Budget:{" "}
             <strong className="tabular-nums">{fmt(budgetCents)}</strong>
           </p>
           <div className="mt-4">
@@ -183,7 +183,7 @@ export default function Page() {
           ))}
           {expenses.length === 0 && (
             <li className="text-sm text-gray-500 dark:text-gray-400">
-              No expenses yet
+              No expenses yet!
             </li>
           )}
         </ul>
