@@ -25,23 +25,23 @@ React Hook Form (forms)
 
 🚀 Quick Start
 
-# 1) Clone the Budget App repository
+## 1) Clone the Budget App repository
 
 https://github.com/denildominic/Budget_App.git
 
 cd Budget_App
 
-# 2) Install dependencies
+## 2) Install dependencies
 
 npm install
 
 ### or: pnpm i / yarn
 
-# 3) Environment
+## 3) Environment
 
 cp .env.example .env.local
 
-# 4) Dev
+## 4) Dev
 
 npm run dev
 
