@@ -2,7 +2,7 @@ ByteBudget — Modern Personal Finance Dashboard
 ByteBudget is a fast, minimalist budget app built with Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui. It focuses on clarity, keyboard-friendly
 input, and real-time insights so you can track spending without friction.
 
-✨ Features
+ Features
 Beautiful Light/Dark UI with system preference + manual toggle
 Accounts & Categories (income/expense) with editable budgets
 Smart Transactions (quick add, CSV import, inline edit)
@@ -13,7 +13,7 @@ Offline-friendly UI; optimistic updates for snappy interactions
 Accessible: semantic components, focus states, keyboard shortcuts
 UI built with shadcn/ui components and Tailwind design tokens for a clean, Apple-like aesthetic.
 
-🧰 Tech Stack
+ Tech Stack
 Next.js 15 (App Router + Turbopack)
 TypeScript
 Tailwind CSS + shadcn/ui
@@ -23,7 +23,7 @@ Prisma + SQLite/PostgreSQL (data)
 Next Themes (dark mode)
 React Hook Form (forms)
 
-🚀 Quick Start
+ Quick Start
 
 ## 1) Clone the Budget App repository
 
